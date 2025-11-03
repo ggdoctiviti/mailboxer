@@ -9,7 +9,9 @@ class Mailboxer::BaseBuilder
   def build
     klass.new.tap do |object|
       params.keys.each do |field|
-        object.send("#{field}=", get(field)) unless get(field).nil?
+        object.send("#{field}=", get(field)) unless (get(field).nil? || field.eql?("attachment"))
+        att = get("attachment").nil? ? nil : Mailboxer::AttachmentUploader.new(attachment: get("attachment"))
+        object.attachment = att unless att.nil?
       end
     end
   end
